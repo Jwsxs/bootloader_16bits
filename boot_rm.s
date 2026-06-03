@@ -5,7 +5,7 @@
 .globl	_start
 
 _start:
-	# limpo qualquer carry flag existente, evitando ",+7" ler qualquer CF de processos antigos, "sujos"
+	# limpo qualquer carry flag existente, evitando jc ler qualquer CF de processos antigos, "sujos"
 	clc
 	# pois a chamada INT12h retorna, em %ax, o kb disponível para uso no lower memory (<640KB)
 	int	$0x12
@@ -27,7 +27,6 @@ msg: .asciz "Hello, welcome!\nBootloader (apparently) running fine!\n"
 # enche nosso espaço de memória, a partir de 0x0500 à 0x7ffff, com 0's
 # no linker > ./run.sh > depois é definido o _start em 0x07c00, no meio desse emaranhado
 # isso pois de 0x07c00 à 0x07dff é o setor de Boot da OS, 512 bytes no total
-
 # .fill repeat, size, value
 .fill 510-(.-_start), 1, 0
 
@@ -41,8 +40,10 @@ msg: .asciz "Hello, welcome!\nBootloader (apparently) running fine!\n"
 #	0x55_(16) = 5 * 16^1 + 5 * 16^0 = 01010101
 #	0xaa_(16) = 10 * 16^1 + 10 * 16^0 = 10101010
 #		= 01010101_10101010
-
 # ou mesmo por escolha da IBM para versões BIOS mais antigas, apenas para id de boot mesmo
-
 # padrão little-endian, só é ao contrário pq norte-americano é foda
 .word 0xaa55 # 0x7dfe = 55 | 0x7dff = aa
+
+# 4kb de espaço para stack
+.space 4096
+stack_top:

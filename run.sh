@@ -8,6 +8,8 @@ AS_FLAGS=""
 
 QEMU_="qemu-system-x86_64"
 
+QEMU_FLAGS="-drive format=raw,file="$BOOT_L""
+
 comp_boot() {
 	# first assembly it
 	as $AS_FLAGS "$1" -o obj.o
@@ -23,8 +25,12 @@ if [ -f "$SRC" ]; then
 	comp_boot "$SRC"
 fi
 
+if [ "$1" = "-d" ] || [ "$1" = "--debug" ]; then
+	QEMU_FLAGS="$QEMU_FLAGS -s -S"
+fi
+
 if [ -f "$BOOT_L" ]; then
-	$QEMU_ -drive format=raw,file="$BOOT_L"
+	$QEMU_ $QEMU_FLAGS 
 else
 	echo -e "Some kinda error occurred!\n"
 fi
